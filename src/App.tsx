@@ -7,6 +7,11 @@ import { RegistrationCard } from '@/components/ui/liquid-glass-checkout'
 const isSet = (line: string) => !line.includes('[')
 const withoutUnset = (line: string) => line.replace(/\s*[^.።]*\[[^\]]*\]\s*$/u, '')
 
+// Owner decision 25 Nov 2026: hide the interest form, its nav link and the hero button until the form
+// posts somewhere real. Set to true once it is connected.
+const FORM_CONNECTED = false
+const navItems = (lang: Lang) => copy[lang].nav.filter((n) => FORM_CONNECTED || n.id !== 'interest')
+
 const asset = (p: string) => `${import.meta.env.BASE_URL}${p}`
 const STORE_KEY = 'garro-lang'
 
@@ -58,7 +63,7 @@ export default function App() {
         {How()}
         {Safety()}
         {DashboardScreen()}
-        {Interest()}
+        {FORM_CONNECTED && Interest()}
       </main>
       {Footer()}
     </>
@@ -71,9 +76,11 @@ export default function App() {
         <div className="relative mx-auto w-full max-w-hero">
           <h1 className="max-w-4xl text-[2.25rem] sm:text-6xl lg:text-[4.75rem]">{t.hero.title}</h1>
           <p className="mt-6 max-w-2xl text-base text-white/75 sm:text-xl">{t.hero.sub}</p>
-          <a href="#interest" className="btn btn-primary btn-lg mt-10">
-            {t.hero.button}
-          </a>
+          {FORM_CONNECTED && (
+            <a href="#interest" className="btn btn-primary btn-lg mt-10">
+              {t.hero.button}
+            </a>
+          )}
         </div>
       </section>
     )
@@ -295,7 +302,7 @@ function Header({
             <span className="font-display text-xl font-semibold text-cream">{t.workspace.brand}</span>
           </a>
           <nav aria-label={t.navLabel} className="hidden items-center md:flex">
-            {t.nav.map((n) => (
+            {navItems(lang).map((n) => (
               <a key={n.id} href={`#${n.id}`} className={linkCls}>
                 {n.label}
               </a>
@@ -334,7 +341,7 @@ function Header({
         </div>
         {menu && (
           <nav id="mobile-menu" aria-label={t.navLabel} className="grid border-t border-white/10 py-2 md:hidden">
-            {t.nav.map((n) => (
+            {navItems(lang).map((n) => (
               <a key={n.id} href={`#${n.id}`} onClick={() => setMenu(false)} className="inline-flex min-h-12 items-center px-2 text-base font-medium text-white/90">
                 {n.label}
               </a>
