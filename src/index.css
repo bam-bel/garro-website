@@ -1,0 +1,228 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/outfit/latin-400.css";
+@import "@fontsource/outfit/latin-500.css";
+@import "@fontsource/outfit/latin-600.css";
+@import "@fontsource/dm-sans/latin-400.css";
+@import "@fontsource/dm-sans/latin-500.css";
+@import "@fontsource/dm-sans/latin-600.css";
+
+/* Amharic: self-hosted Noto Sans Ethiopic (variable font, OFL licence beside the file). */
+@font-face {
+  font-family: "Noto Sans Ethiopic";
+  src: url("./fonts/NotoSansEthiopic.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* Garro tokens (docs/research/2026-11-25-mestawot-visual-style.md and .claude/skills/garro/SKILL.md) */
+@theme {
+  --color-ink: #050706;
+  --color-surface: #0c0f0e;
+  --color-surface-2: #121715;
+  --color-cream: #edd9b5;
+  --color-cream-dim: #c4a87a;
+  --color-gold: #e3a94b;
+  --color-amber: #d4933a;
+  --color-orange: #f58220;
+  --color-teal: #5a9099;
+  --color-rust: #a33b2a;
+  --color-on-gold: #1b1408;
+  --color-ok: #34d399;
+  --color-err: #e8705f;
+
+  --font-display: "Outfit", "Noto Sans Ethiopic", system-ui, sans-serif;
+  --font-body: "DM Sans", "Noto Sans Ethiopic", system-ui, sans-serif;
+
+  --radius-btn: 12px;
+  --radius-nav: 16px;
+  --radius-bento: 32px;
+  --radius-panel: 44px;
+
+  --container-hero: 72rem;
+  --container-wide: 80rem;
+  --container-text: 56rem;
+
+  --ease-garro: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* shadcn token names, mapped to the Garro palette so shadcn parts stay on brand */
+@theme inline {
+  --font-heading: var(--font-display);
+  --font-sans: var(--font-body);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  color-scheme: dark;
+  --background: #050706;
+  --foreground: #ffffff;
+  --card: #0c0f0e;
+  --card-foreground: #ffffff;
+  --popover: #0c0f0e;
+  --popover-foreground: #ffffff;
+  --primary: #e3a94b;
+  --primary-foreground: #1b1408;
+  --secondary: #121715;
+  --secondary-foreground: #edd9b5;
+  --muted: #121715;
+  --muted-foreground: rgba(255, 255, 255, 0.7);
+  --accent: #121715;
+  --accent-foreground: #edd9b5;
+  --destructive: #e8705f;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #e3a94b;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-ink font-body text-white antialiased;
+    margin: 0;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+  /* faint film grain, an inline SVG (no network request) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  }
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+  ::selection {
+    background: #d4933a;
+    color: #050706;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-cream;
+    font-weight: 400;
+    margin: 0;
+  }
+  h1 {
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+  h2 {
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  h3 {
+    line-height: 1.25;
+  }
+
+  /* Ethiopic: taller letters, no tracking, no uppercase, heavier headings */
+  :lang(am) {
+    text-transform: none;
+    letter-spacing: 0 !important;
+  }
+  :lang(am) h1,
+  :lang(am) h2,
+  h1:lang(am),
+  h2:lang(am) {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  :lang(am) h3 {
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  :lang(am) p,
+  :lang(am) li,
+  :lang(am) label,
+  :lang(am) a,
+  :lang(am) button {
+    line-height: 1.7;
+  }
+
+  /* visible focus ring on every control (the reference site has none) */
+  :focus-visible {
+    outline: 3px solid #e3a94b;
+    outline-offset: 3px;
+  }
+  .on-cream :focus-visible {
+    outline-color: #050706;
+  }
+
+  [id] {
+    scroll-margin-top: 88px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-btn px-5 py-2.5 font-body text-base font-semibold;
+    transition:
+      background-color 200ms var(--ease-garro),
+      transform 200ms var(--ease-garro),
+      color 200ms var(--ease-garro);
+  }
+  .btn-primary {
+    @apply bg-gold text-on-gold shadow-lg hover:bg-white active:bg-[#f3c46e];
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+  }
+  .btn-primary:active {
+    transform: none;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
