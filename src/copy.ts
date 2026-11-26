@@ -104,6 +104,9 @@ const en = {
   },
   footer: {
     line1: 'Garro: records and payment instructions for cooperatives.',
+    // ADDED 26 Nov 2026: link to the voice agent demo page at voice/ (owner's request)
+    voiceNav: 'Voice demo',
+    voiceLink: 'Try the demo of the voice agent that calls members',
     status: 'Garro is preparing a pilot with one dairy cooperative.',
     phone: '[phone to confirm]',
     email: '[email to confirm]',
@@ -213,6 +216,9 @@ const am: typeof en = {
   },
   footer: {
     line1: 'ጋሮ፦ ለማኅበራት መዝገብና የክፍያ መመሪያ።',
+    // ADDED 26 Nov 2026, draft Amharic: needs native-speaker review
+    voiceNav: 'የድምፅ ሙከራ',
+    voiceLink: 'ለአባላት የሚደውለውን የድምፅ ረዳት ሙከራ ይሞክሩ',
     status: 'ጋሮ ከአንድ የወተት ማኅበር ጋር ለሙከራ በዝግጅት ላይ ነው።',
     phone: '[ስልክ ይረጋገጥ]',
     email: '[ኢሜይል ይረጋገጥ]',

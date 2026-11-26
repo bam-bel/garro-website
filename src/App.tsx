@@ -243,6 +243,11 @@ export default function App() {
             </span>
             <p className="mt-4 text-sm text-white/70">{f.line1}</p>
             <p className="mt-1 text-sm text-white/70">{f.status}</p>
+            <p className="mt-3 text-sm">
+              <a href="voice/" className="inline-flex min-h-11 items-center text-gold underline underline-offset-4 hover:text-cream">
+                {f.voiceLink}
+              </a>
+            </p>
           </div>
           <ul className="grid list-none gap-1 p-0 text-sm text-white/70">
             {[f.phone, f.email, f.address].filter(isSet).map((l) => (
@@ -307,6 +312,9 @@ function Header({
                 {n.label}
               </a>
             ))}
+            <a href="voice/" className={linkCls}>
+              {t.footer.voiceNav}
+            </a>
           </nav>
           <div className="flex items-center gap-1">
             <div role="group" aria-label={t.langSwitchLabel} className="flex rounded-btn border border-white/10 p-0.5">
@@ -346,6 +354,9 @@ function Header({
                 {n.label}
               </a>
             ))}
+            <a href="voice/" className="inline-flex min-h-12 items-center px-2 text-base font-medium text-white/90">
+              {t.footer.voiceNav}
+            </a>
           </nav>
         )}
       </div>
