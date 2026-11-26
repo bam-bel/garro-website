@@ -1,0 +1,54 @@
+{
+ "script_version": "voice-am-draft-1",
+ "voice": "Kore",
+ "model": "gemini-3.8-flash-lite-tts",
+ "sample_rate": 12000,
+ "total": 42,
+ "clips": {
+  "0087755d0023f34d": {
+   "seconds": 15.5
+  },
+  "552d778355ebce1d": {
+   "seconds": 8.4
+  },
+  "fdd7ec4a872e51bd": {
+   "seconds": 21.2
+  },
+  "22e9325c8fc8fcc5": {
+   "seconds": 9.3
+  },
+  "19f9dfe7e2355a20": {
+   "seconds": 3.7
+  },
+  "b0d3fbd76c7a67e6": {
+   "seconds": 3.5
+  },
+  "bf863526f20e94e7": {
+   "seconds": 8.2
+  },
+  "713224ca4a4ae3e0": {
+   "seconds": 13.1
+  },
+  "f00651438f24a17a": {
+   "seconds": 5.7
+  },
+  "b4d06f5bb169f2d1": {
+   "seconds": 9.7
+  },
+  "6bb38ca220806ee2": {
+   "seconds": 9.5
+  },
+  "d4cfda817f7a5553": {
+   "seconds": 5.3
+  },
+  "8273f1cf2c8f4c86": {
+   "seconds": 5.7
+  },
+  "1de6372292073446": {
+   "seconds": 7.3
+  },
+  "e793d02e886acf3f": {
+   "seconds": 7.7
+  }
+ }
+}

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>የድምፅ ረዳት ሙከራ · Voice agent demo</title>
-  <link rel="stylesheet" href="voice.css">
+  <link rel="stylesheet" href="voice.css?v=7fc605a116">
   <meta name="robots" content="noindex">
   <script type="importmap">{ "imports": { "decimal.js": "./vendor/decimal.js" } }</script>
 </head>
@@ -60,7 +60,7 @@
       </ul>
     </section>
   </main>
-  <script type="module">import { createLocalApi } from "./lib/local-api.js"; globalThis.voiceLocalApi = createLocalApi();</script>
-  <script type="module" src="voice.js"></script>
+  <script type="module">import { createLocalApi } from "./lib/local-api.js?v=7fc605a116"; import { clipId } from "./lib/clips.js?v=7fc605a116"; globalThis.voiceLocalApi = createLocalApi(); globalThis.voiceClipId = clipId;</script>
+  <script type="module" src="voice.js?v=7fc605a116"></script>
 </body>
 </html>

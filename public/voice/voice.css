@@ -37,6 +37,7 @@ h3 { margin: 20px 0 8px; color: var(--cream-dim); font-size: 13px; letter-spacin
 .bubble.agent { background: #13201E; border: 1px solid rgba(90, 144, 153, .35); }
 .bubble.member { justify-self: end; background: #201811; border: 1px solid rgba(227, 169, 75, .25); }
 .bubble.note { max-width: 100%; justify-self: center; background: none; border: 1px dashed var(--line); color: var(--cream-dim); font-size: 13px; text-align: center; }
+.bubble button { display: block; min-height: 40px; margin-top: 8px; padding: 6px 12px; font-size: 14px; }
 .bubble small { display: block; margin-top: 4px; color: rgba(255, 255, 255, .6); font: 12px/1.4 system-ui, sans-serif; }
 .actions, .row, .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 button { min-height: 48px; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(237, 217, 181, .25); background: transparent; color: var(--cream); font: inherit; cursor: pointer; }

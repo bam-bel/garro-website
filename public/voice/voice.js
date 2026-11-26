@@ -42,6 +42,7 @@ function bubble(kind, text, small) {
   if (small) node.append(el('small', '', small));
   $('talk').append(node);
   node.scrollIntoView({ block: 'nearest' });
+  return node;
 }
 
 function renderMembers(members) {
@@ -85,16 +86,66 @@ function controls() {
   for (const chip of $('chips').children) chip.disabled = !live;
 }
 
-let playing = null;
-function play(base64) {
-  playing?.pause();
-  if (!base64) return;
-  playing = new Audio('data:audio/wav;base64,' + base64);
-  playing.play().catch(() => {});
+// One audio player for the whole page. Phones only let a page start sound from inside a tap, and the agent's
+// line arrives a moment after the tap, so the player is "unlocked" with a silent blip on the first tap.
+const player = new Audio();
+const silence = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+let unlocked = false;
+function unlock() {
+  if (unlocked) return;
+  unlocked = true;
+  player.src = silence;
+  player.play().catch(() => {});
 }
-function agentSays(body) {
-  bubble('agent', body.say.text, body.audio ? 'ረዳቱ ተናገረ (spoken aloud)' : speechOn && body.speech_failed ? 'የድምፅ አገልግሎቱ አልመለሰም (speech service failed; text only)' : 'ረዳቱ የሚናገረው ጽሑፍ (the exact words the agent would speak)');
-  play(body.audio);
+document.addEventListener('pointerdown', unlock, { capture: true });
+document.addEventListener('keydown', unlock, { capture: true });
+const playing = { pause: () => player.pause() };
+// Starts a sound. If the browser refuses to start it by itself, the line gets a small play button instead.
+async function start(source, bubbleNode) {
+  player.pause();
+  player.src = source;
+  try { await player.play(); } catch {
+    const button = el('button', '', 'ድምፁን አጫውት (play the sound)');
+    button.type = 'button';
+    button.addEventListener('click', () => { player.src = source; player.play().catch(() => {}); });
+    bubbleNode.append(button);
+  }
+}
+// Public copy: lines recorded in advance sit in audio/ as plain files, listed in audio/manifest.json.
+// A line is matched by a fingerprint of its exact spoken text, so a reworded line is never played with old audio.
+let clips = null, clipTotal = 0;
+async function loadClips() {
+  if (!globalThis.voiceClipId) return;
+  try {
+    const response = await fetch('audio/manifest.json', { cache: 'no-cache' });
+    if (!response.ok) return;
+    const manifest = await response.json();
+    clips = manifest.clips ?? null;
+    clipTotal = manifest.total ?? 0;
+  } catch { clips = null; }
+}
+// Some web hosts serve .wav files with a generic file type that phones refuse to play, so each recording is
+// fetched as data and handed to the player labelled as audio. Fetched recordings are kept for the visit.
+const fetched = new Map();
+async function clipFor(spoken) {
+  if (!clips) return null;
+  const id = await globalThis.voiceClipId(spoken);
+  if (!clips[id]) return null;
+  if (!fetched.has(id)) {
+    try {
+      const response = await fetch('audio/' + id + '.wav');
+      if (!response.ok) return null;
+      fetched.set(id, URL.createObjectURL(new Blob([await response.arrayBuffer()], { type: 'audio/wav' })));
+    } catch { return null; }
+  }
+  return fetched.get(id);
+}
+async function agentSays(body) {
+  const clip = body.audio ? null : await clipFor(body.say.spoken);
+  const source = body.audio ? 'data:audio/wav;base64,' + body.audio : clip;
+  const node = bubble('agent', body.say.text, body.audio ? 'ረዳቱ ተናገረ (spoken aloud)' : clip ? 'ረዳቱ ተናገረ (recorded computer voice)'
+    : speechOn && body.speech_failed ? 'የድምፅ አገልግሎቱ አልመለሰም (speech service failed; text only)' : 'ረዳቱ የሚናገረው ጽሑፍ (the exact words the agent would speak)');
+  if (source) start(source, node); else player.pause();
   stage = body.ended ? null : body.stage;
   if (body.ended) {
     callId = null;
@@ -116,7 +167,7 @@ async function startCall() {
   } else if (status === 201) {
     callId = body.call_id;
     $('call-status').textContent = local ? 'ጥሪው ተነስቷል። በቁልፍ ወይም በጽሑፍ ይመልሱ።' : 'ጥሪው ተነስቷል። በቁልፍ፣ በጽሑፍ ወይም በድምፅ ይመልሱ።';
-    agentSays(body);
+    await agentSays(body);
   } else $('call-status').textContent = 'ጥሪውን መጀመር አልተቻለም።';
   controls();
 }
@@ -129,7 +180,7 @@ async function turn(options, shown) {
   busy = false;
   if (status === 200) {
     if (body.heard.via === 'speech') bubble('member', body.heard.transcript || '…', 'የተሰማው (what the speech model heard) · ' + body.heard.intent);
-    agentSays(body);
+    await agentSays(body);
     renderLog(body.log);
     if (body.ended) refresh();
   } else if (status === 404) {
@@ -190,11 +241,16 @@ async function stopRecording() {
 
 async function refresh() {
   const { body } = await api('/status');
+  if (body.static && !clips) await loadClips();
   speechOn = Boolean(body.speech);
   $('mode').textContent = speechOn
     ? 'Speech is ON: the agent speaks and listens through the speech service. Synthetic members only.'
     : body.static
-      ? 'Demo with invented members. It runs inside your browser: nothing you type is sent anywhere, and there is no sound in this version. The text is what the agent would say on a call. The Amharic wording is a draft under review.'
+      ? clips
+        ? 'Demo with invented members. Turn your sound on: the agent speaks with a computer voice recorded in advance. '
+          + (Object.keys(clips).length < clipTotal ? 'This first version has sound for the first member in the list; other lines appear as text. ' : '')
+          + 'It runs inside your browser and nothing you type is sent anywhere. You answer with the keys or by typing. The Amharic wording is a draft under review.'
+        : 'Demo with invented members. It runs inside your browser: nothing you type is sent anywhere, and there is no sound in this version. The text is what the agent would say on a call. The Amharic wording is a draft under review.'
       : 'Text mode: no speech key was given, so nothing is spoken. The text shown is exactly what the agent would say. Keys and typing work.';
   $('mic').hidden = Boolean(body.static);
   $('mode').classList.toggle('on', speechOn);
