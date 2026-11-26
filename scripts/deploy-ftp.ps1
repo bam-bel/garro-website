@@ -5,7 +5,9 @@
 #   powershell -File scripts/deploy-ftp.ps1 -List     # log in and list the remote folder only
 #   powershell -File scripts/deploy-ftp.ps1 -DryRun   # show what would be uploaded
 #   powershell -File scripts/deploy-ftp.ps1           # upload
-param([switch]$List, [switch]$DryRun, [switch]$Diag)
+#   -Only voice    upload only files under dist/voice/ (leaves every other file on the host alone)
+#   -Active        use active-mode FTP (the server connects back to this computer); try it when passive mode times out
+param([switch]$List, [switch]$DryRun, [switch]$Diag, [switch]$Active, [string]$Only)
 $ErrorActionPreference = 'Stop'
 $OutputEncoding = New-Object Text.UTF8Encoding $false
 
@@ -25,6 +27,7 @@ $cred = ($cfg['FTP_USER'] + ':' + $cfg['FTP_PASSWORD']).Replace('\', '\\').Repla
 $curlConfig = "user = `"$cred`""
 
 function Invoke-Curl([string[]]$curlArgs) {
+  if ($Active) { $curlArgs = @('--ftp-port', '-') + $curlArgs }
   # Windows PowerShell cannot pipe reliably into curl -K -, so the login goes into a temp file
   # readable only by this user, deleted straight after the call.
   $tmp = [IO.Path]::GetTempFileName()
@@ -40,7 +43,7 @@ function Invoke-Curl([string[]]$curlArgs) {
       cmd /c "curl.exe -v -sS -K `"$tmp`" --ssl-reqd --connect-timeout 20 --max-time 60 $($curlArgs -join ' ') 2>&1" |
         Where-Object { $_ -notmatch 'PASS|USER' }
     } else {
-      curl.exe -sS -K $tmp --ssl-reqd --connect-timeout 20 @curlArgs
+      curl.exe -sS -K $tmp --ssl-reqd --connect-timeout 20 --max-time 600 @curlArgs
     }
     $code = $LASTEXITCODE
   } finally {
@@ -58,6 +61,11 @@ $dist = Join-Path $root 'dist'
 if (-not (Test-Path (Join-Path $dist 'index.html'))) { throw 'No dist/index.html. Run npm run build first.' }
 
 $files = Get-ChildItem $dist -Recurse -File
+if ($Only) {
+  $prefix = $Only.Trim('/').Trim('\') + '/'
+  $files = @($files | Where-Object { $_.FullName.Substring($dist.Length + 1).Replace('\', '/').StartsWith($prefix) })
+  if (-not $files.Count) { throw "No files under dist/$prefix" }
+}
 foreach ($f in $files) {
   $rel = $f.FullName.Substring($dist.Length + 1).Replace('\', '/')
   if ($DryRun) { "would upload $rel"; continue }
