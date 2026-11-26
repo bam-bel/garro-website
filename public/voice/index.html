@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="am">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>የድምፅ ረዳት ሙከራ · Voice agent demo</title>
+  <link rel="stylesheet" href="voice.css">
+  <meta name="robots" content="noindex">
+  <script type="importmap">{ "imports": { "decimal.js": "./vendor/decimal.js" } }</script>
+</head>
+<body>
+  <header class="top">
+    <p class="eyebrow"><a href="../">Messoric</a> · demo · invented members only</p>
+    <h1>የድምፅ ረዳት ሙከራ</h1>
+    <p class="lead" lang="en">The agent calls a cooperative member, checks who answered, and reads their own delivery and payment status in Amharic. Here the browser stands in for the phone.</p>
+    <p id="mode" class="mode" lang="en" role="status">Checking the demo…</p>
+  </header>
+
+  <main class="grid">
+    <section class="panel" aria-labelledby="members-title">
+      <h2 id="members-title">1 · አባል ይምረጡ <span lang="en">Pick a member to call</span></h2>
+      <ul id="members" class="members"></ul>
+      <p class="small" lang="en">Names and figures are invented. No phone numbers or account numbers exist in this demo.</p>
+    </section>
+
+    <section class="panel phone" aria-labelledby="call-title">
+      <h2 id="call-title">2 · ጥሪው <span lang="en">The call</span></h2>
+      <p id="call-status" class="status" role="status">አባል መርጠው «ደውል» ይጫኑ።</p>
+      <div id="talk" class="talk" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="call" class="primary" type="button" disabled>ደውል</button>
+        <button id="hangup" type="button" disabled>ዝጋ</button>
+        <button id="mic" type="button" disabled>ተናገር</button>
+      </div>
+
+      <div id="keys" class="keys" role="group" aria-label="የስልክ ቁልፎች"></div>
+
+      <form id="say" class="say" autocomplete="off">
+        <label for="text">ወይም በአማርኛ ይጻፉ <span lang="en">or type in Amharic</span></label>
+        <div class="row">
+          <input id="text" type="text" maxlength="300" lang="am" disabled>
+          <button type="submit" disabled>ላክ</button>
+        </div>
+      </form>
+      <div id="chips" class="chips" role="group" aria-label="ፈጣን መልሶች"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="log-title">
+      <h2 id="log-title">3 · ለማኅበሩ ሠራተኞች <span lang="en">What staff would see</span></h2>
+      <p class="small" lang="en">Each call leaves one line: how it ended and what needs a person. No recording and no transcript is kept.</p>
+      <ul id="log" class="log"><li class="empty">ገና የተመዘገበ ጥሪ የለም።</li></ul>
+      <h3 lang="en">What the agent will not do</h3>
+      <ul class="rules" lang="en">
+        <li>Say anything before the person confirms they are the member.</li>
+        <li>Talk about anyone else's record: it is only ever given one.</li>
+        <li>Take a payment, a PIN, a password or an account number.</li>
+        <li>Speak a sentence that is not in the approved Amharic script.</li>
+        <li>Call a member who has no recorded consent for calls.</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module">import { createLocalApi } from "./lib/local-api.js"; globalThis.voiceLocalApi = createLocalApi();</script>
+  <script type="module" src="voice.js"></script>
+</body>
+</html>
